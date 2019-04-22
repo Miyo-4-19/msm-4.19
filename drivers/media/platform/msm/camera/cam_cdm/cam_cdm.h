@@ -13,7 +13,6 @@
 #ifndef _CAM_CDM_H_
 #define _CAM_CDM_H_
 
-#include <linux/dma-direction.h>
 #include <linux/module.h>
 #include <linux/of_platform.h>
 #include <linux/random.h>

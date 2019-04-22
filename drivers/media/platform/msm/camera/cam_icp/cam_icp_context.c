@@ -17,8 +17,6 @@
 #include <media/cam_sync.h>
 #include <media/cam_defs.h>
 #include <media/cam_icp.h>
-#include "cam_sync_api.h"
-#include "cam_node.h"
 #include "cam_context.h"
 #include "cam_context_utils.h"
 #include "cam_icp_context.h"
