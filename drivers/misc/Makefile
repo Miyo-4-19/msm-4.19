@@ -82,4 +82,5 @@ obj-y                           += qrc/
 obj-$(CONFIG_KINECTICS_XR_NORDIC) += kxrctrl/
 
 obj-y				 += pn553/
+obj-$(CONFIG_SONY_EXT_UIM_CTRL)  += sony_ext_uim_ctrl.o
 
