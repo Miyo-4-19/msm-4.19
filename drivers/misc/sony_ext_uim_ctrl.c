@@ -36,6 +36,7 @@ struct sony_ext_uim_ctrl_drvdata {
 	bool type;
 	bool is_set_once;
 	bool uim2_detect_en_status;
+	bool uim2_detect_legacy;
 };
 
 static struct sony_ext_uim_ctrl_drvdata *_drv;
@@ -171,6 +172,8 @@ static int sony_ext_uim_ctrl_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, drv);
 	drv->dev = &pdev->dev;
 
+	drv->uim2_detect_legacy = of_property_read_bool(np, "uim2_detect_legacy");
+
 	drv->uim2_detect_en_gpio = of_get_named_gpio(np,
 					"uim2_detect_en_gpio", 0);
 	if (!gpio_is_valid(drv->uim2_detect_en_gpio))
@@ -207,8 +210,10 @@ static int sony_ext_uim_ctrl_probe(struct platform_device *pdev)
 	mutex_init(&drv->lock);
 	_drv = drv;
 
-	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_detect_en_gpio, 0);
+	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_detect_en_gpio,
+		drv->uim2_detect_legacy ? 1 : 0);
 	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_select_gpio, 0);
+
 	return 0;
 
 probe_failed:
