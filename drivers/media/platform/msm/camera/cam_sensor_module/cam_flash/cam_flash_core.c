@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -8,6 +9,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017, The Linux Foundation. All rights reserved.
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
  */
 
 #include <linux/module.h>
@@ -902,9 +908,12 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 {
 	int rc = 0, i = 0;
 	uintptr_t generic_ptr;
+<<<<<<< HEAD
 	uint32_t total_cmd_buf_in_bytes = 0;
 	uint32_t processed_cmd_buf_in_bytes = 0;
 	uint16_t cmd_length_in_bytes = 0;
+=======
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 	uint32_t *cmd_buf =  NULL;
 	uint32_t *offset = NULL;
 	uint32_t frm_offset = 0;
@@ -928,7 +937,8 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 	/* getting CSL Packet */
 	ioctl_ctrl = (struct cam_control *)arg;
 
-	if (copy_from_user((&config), (void __user *) ioctl_ctrl->handle,
+	if (copy_from_user((&config),
+		u64_to_user_ptr(ioctl_ctrl->handle),
 		sizeof(config))) {
 		CAM_ERR(CAM_FLASH, "Copy cmd handle from user failed");
 		return -EFAULT;
@@ -979,6 +989,14 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 		offset = (uint32_t *)((uint8_t *)&csl_packet->payload +
 			csl_packet->cmd_buf_offset);
 		cmd_desc = (struct cam_cmd_buf_desc *)(offset);
+<<<<<<< HEAD
+=======
+		rc = cam_mem_get_cpu_buf(cmd_desc->mem_handle,
+			&generic_ptr, &len_of_buffer);
+		cmd_buf = (uint32_t *)(generic_ptr +
+			cmd_desc->offset);
+		cam_flash_info = (struct cam_flash_init *)cmd_buf;
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 
 		/* Loop through multiple command buffers */
 		for (i = 1; i < csl_packet->num_cmd_buf; i++) {
@@ -1157,6 +1175,7 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 		i2c_reg_settings->request_id =
 			csl_packet->header.request_id;
 		cmd_desc = (struct cam_cmd_buf_desc *)(offset);
+<<<<<<< HEAD
 		rc = cam_sensor_i2c_command_parser(
 			&fctrl->io_master_info,
 			i2c_reg_settings, cmd_desc, 1);
@@ -1164,12 +1183,72 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 			CAM_ERR(CAM_FLASH,
 			"Failed in parsing i2c packets");
 			return rc;
+=======
+		rc = cam_mem_get_cpu_buf(cmd_desc->mem_handle,
+			&generic_ptr, &len_of_buffer);
+		cmd_buf = (uint32_t *)(generic_ptr +
+			cmd_desc->offset);
+
+		if (!cmd_buf)
+			return -EINVAL;
+
+		cmn_hdr = (struct common_header *)cmd_buf;
+
+		switch (cmn_hdr->cmd_type) {
+		case CAMERA_SENSOR_FLASH_CMD_TYPE_FIRE: {
+			CAM_DBG(CAM_FLASH,
+				"CAMERA_FLASH_CMD_TYPE_OPS case called");
+			if ((fctrl->flash_state == CAM_FLASH_STATE_INIT) ||
+				(fctrl->flash_state ==
+					CAM_FLASH_STATE_ACQUIRE)) {
+				CAM_WARN(CAM_FLASH,
+					"Rxed Flash fire ops without linking");
+				fctrl->per_frame[frame_offset].
+					cmn_attr.is_settings_valid = false;
+				return 0;
+			}
+
+			flash_operation_info =
+				(struct cam_flash_set_on_off *) cmd_buf;
+			if (!flash_operation_info) {
+				CAM_ERR(CAM_FLASH,
+					"flash_operation_info Null");
+				return -EINVAL;
+			}
+
+			fctrl->per_frame[frame_offset].opcode =
+				flash_operation_info->opcode;
+			fctrl->per_frame[frame_offset].cmn_attr.count =
+				flash_operation_info->count;
+			for (i = 0;
+				i < flash_operation_info->count; i++)
+				fctrl->per_frame[frame_offset].
+					led_current_ma[i]
+					= flash_operation_info->
+					led_current_ma[i];
+			}
+			break;
+		default:
+			CAM_ERR(CAM_FLASH, "Wrong cmd_type = %d",
+				cmn_hdr->cmd_type);
+			return -EINVAL;
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 		}
 		break;
 	}
 	case CAM_FLASH_PACKET_OPCODE_NON_REALTIME_SET_OPS: {
 		offset = (uint32_t *)((uint8_t *)&csl_packet->payload +
 			csl_packet->cmd_buf_offset);
+<<<<<<< HEAD
+=======
+		fctrl->nrt_info.cmn_attr.is_settings_valid = true;
+		cmd_desc = (struct cam_cmd_buf_desc *)(offset);
+		rc = cam_mem_get_cpu_buf(cmd_desc->mem_handle,
+			&generic_ptr, &len_of_buffer);
+		cmd_buf = (uint32_t *)(generic_ptr +
+			cmd_desc->offset);
+		cmn_hdr = (struct common_header *)cmd_buf;
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 
 		/* add support for handling i2c_data*/
 		i2c_reg_settings = &fctrl->i2c_data.config_settings;

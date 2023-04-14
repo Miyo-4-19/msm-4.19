@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -589,7 +582,7 @@ static int cam_fd_mgr_util_prepare_io_buf_info(int32_t iommu_hdl,
 					iommu_hdl, &io_addr[plane], &size);
 				if (rc) {
 					CAM_ERR(CAM_FD,
-						"Invalid io buf %d %d %d %d",
+						"Failed to get io buf %u %u %u %d",
 						io_cfg[i].direction,
 						io_cfg[i].resource_type, plane,
 						rc);
@@ -695,6 +688,7 @@ static int cam_fd_mgr_util_prepare_io_buf_info(int32_t iommu_hdl,
 	prepare->num_in_map_entries  = num_in_buf;
 	prepare->num_out_map_entries = num_out_buf;
 	return rc;
+<<<<<<< HEAD
 
 rel_cpu_buf:
 	for (j = plane - 1; j >= 0; j--) {
@@ -704,6 +698,8 @@ rel_cpu_buf:
 				io_cfg[i].resource_type, j);
 	}
 	return rc;
+=======
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 }
 
 static int cam_fd_mgr_util_prepare_hw_update_entries(
@@ -1172,7 +1168,7 @@ static int cam_fd_mgr_hw_acquire(void *hw_mgr_priv, void *hw_acquire_args)
 	}
 
 	if (copy_from_user(&fd_acquire_args,
-		(void __user *)acquire_args->acquire_info,
+		u64_to_user_ptr, (acquire_args->acquire_info),
 		sizeof(struct cam_fd_acquire_dev_info))) {
 		CAM_ERR(CAM_FD, "Copy from user failed");
 		return -EFAULT;
@@ -1884,7 +1880,6 @@ int cam_fd_hw_mgr_deinit(struct device_node *of_node)
 
 	cam_req_mgr_workq_destroy(&g_fd_hw_mgr.work);
 
-	cam_smmu_ops(g_fd_hw_mgr.device_iommu.non_secure, CAM_SMMU_DETACH);
 	cam_smmu_destroy_handle(g_fd_hw_mgr.device_iommu.non_secure);
 	g_fd_hw_mgr.device_iommu.non_secure = -1;
 
@@ -2002,12 +1997,6 @@ int cam_fd_hw_mgr_init(struct device_node *of_node,
 		goto destroy_mutex;
 	}
 
-	rc = cam_smmu_ops(g_fd_hw_mgr.device_iommu.non_secure, CAM_SMMU_ATTACH);
-	if (rc) {
-		CAM_ERR(CAM_FD, "FD attach iommu handle failed, rc=%d", rc);
-		goto destroy_smmu;
-	}
-
 	rc = cam_cdm_get_iommu_handle("fd", &g_fd_hw_mgr.cdm_iommu);
 	if (rc)
 		CAM_DBG(CAM_FD, "Failed to acquire the CDM iommu handles");
@@ -2087,8 +2076,6 @@ int cam_fd_hw_mgr_init(struct device_node *of_node,
 	return rc;
 
 detach_smmu:
-	cam_smmu_ops(g_fd_hw_mgr.device_iommu.non_secure, CAM_SMMU_DETACH);
-destroy_smmu:
 	cam_smmu_destroy_handle(g_fd_hw_mgr.device_iommu.non_secure);
 	g_fd_hw_mgr.device_iommu.non_secure = -1;
 destroy_mutex:

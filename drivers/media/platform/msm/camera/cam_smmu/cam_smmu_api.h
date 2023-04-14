@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright (c) 2014-2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -8,6 +9,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2014-2019, The Linux Foundation. All rights reserved.
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
  */
 
 #ifndef _CAM_SMMU_API_H_
@@ -16,7 +22,6 @@
 #include <linux/dma-direction.h>
 #include <linux/module.h>
 #include <linux/dma-buf.h>
-#include <asm/dma-iommu.h>
 #include <linux/dma-direction.h>
 #include <linux/of_platform.h>
 #include <linux/iommu.h>
@@ -68,12 +73,16 @@ typedef void (*cam_smmu_client_page_fault_handler)(struct iommu_domain *domain,
 /**
  * @brief            : Structure to store region information
  *
- * @param iova_start : Start address of region
- * @param iova_len   : length of region
+ * @param iova_start         : Start address of region
+ * @param iova_len           : length of region
+ * @param discard_iova_start : iova addr start from where should not be used
+ * @param discard_iova_len   : length of discard iova region
  */
 struct cam_smmu_region_info {
 	dma_addr_t iova_start;
 	size_t iova_len;
+	dma_addr_t discard_iova_start;
+	size_t discard_iova_len;
 };
 
 /**
@@ -106,6 +115,8 @@ int cam_smmu_ops(int handle, enum cam_smmu_ops_param op);
  *
  * @param handle: Handle to identify the CAM SMMU client (VFE, CPP, FD etc.)
  * @param ion_fd: ION handle identifying the memory buffer.
+ * @param dis_delayed_unmap: Whether to disable Delayed Unmap feature
+ *                           for this mapping
  * @dir         : Mapping direction: which will traslate toDMA_BIDIRECTIONAL,
  *                DMA_TO_DEVICE or DMA_FROM_DEVICE
  * @dma_addr    : Pointer to physical address where mapped address will be
@@ -115,9 +126,8 @@ int cam_smmu_ops(int handle, enum cam_smmu_ops_param op);
  * @len_ptr     : Length of buffer mapped returned by CAM SMMU driver.
  * @return Status of operation. Negative in case of error. Zero otherwise.
  */
-int cam_smmu_map_user_iova(int handle,
-	int ion_fd, enum cam_smmu_map_dir dir,
-	dma_addr_t *dma_addr, size_t *len_ptr,
+int cam_smmu_map_user_iova(int handle, int ion_fd, bool dis_delayed_unmap,
+	enum cam_smmu_map_dir dir, dma_addr_t *dma_addr, size_t *len_ptr,
 	enum cam_smmu_region_id region_id);
 
 /**
@@ -367,6 +377,7 @@ int cam_smmu_reserve_sec_heap(int32_t smmu_hdl,
 int cam_smmu_release_sec_heap(int32_t smmu_hdl);
 
 /**
+<<<<<<< HEAD
  * @brief Allocates qdss for context bank
  *
  * @param smmu_hdl: SMMU handle identifying context bank
@@ -389,15 +400,27 @@ int cam_smmu_alloc_qdss(int32_t smmu_hdl,
 int cam_smmu_dealloc_qdss(int32_t smmu_hdl);
 
 /**
+=======
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
  * @brief Get start addr & len of I/O region for a given cb
  *
  * @param smmu_hdl: SMMU handle identifying the context bank
  * @param iova: IOVA address of allocated I/O region
  * @param len: Length of allocated I/O memory
+<<<<<<< HEAD
+=======
+ * @param discard_iova_start: Start address of io space to discard
+ * @param discard_iova_len: Length of io space to discard
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
  *
  * @return Status of operation. Negative in case of error. Zero otherwise.
  */
 int cam_smmu_get_io_region_info(int32_t smmu_hdl,
+<<<<<<< HEAD
 	dma_addr_t *iova, size_t *len);
+=======
+	dma_addr_t *iova, size_t *len,
+	dma_addr_t *discard_iova_start, size_t *discard_iova_len);
+>>>>>>> 3386a8d80845 (media: Update camera stack for 4.19)
 
 #endif /* _CAM_SMMU_API_H_ */

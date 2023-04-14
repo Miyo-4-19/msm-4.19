@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/slab.h>
@@ -6348,12 +6341,6 @@ int cam_ife_hw_mgr_init(struct cam_hw_mgr_intf *hw_mgr_intf, int *iommu_hdl)
 		return -EINVAL;
 	}
 
-	if (cam_smmu_ops(g_ife_hw_mgr.mgr_common.img_iommu_hdl,
-		CAM_SMMU_ATTACH)) {
-		CAM_ERR(CAM_ISP, "Attach iommu handle failed.");
-		goto attach_fail;
-	}
-
 	if (cam_smmu_get_handle("cam-secure",
 		&g_ife_hw_mgr.mgr_common.img_iommu_hdl_secure)) {
 		CAM_ERR(CAM_ISP, "Failed to get secure iommu handle");
@@ -6452,6 +6439,9 @@ int cam_ife_hw_mgr_init(struct cam_hw_mgr_intf *hw_mgr_intf, int *iommu_hdl)
 	if (iommu_hdl)
 		*iommu_hdl = g_ife_hw_mgr.mgr_common.img_iommu_hdl;
 
+	if (iommu_hdl)
+		*iommu_hdl = g_ife_hw_mgr.mgr_common.img_iommu_hdl;
+
 	cam_ife_hw_mgr_debug_register();
 	CAM_DBG(CAM_ISP, "Exit");
 
@@ -6470,9 +6460,6 @@ end:
 		g_ife_hw_mgr.mgr_common.img_iommu_hdl_secure);
 	g_ife_hw_mgr.mgr_common.img_iommu_hdl_secure = -1;
 secure_fail:
-	cam_smmu_ops(g_ife_hw_mgr.mgr_common.img_iommu_hdl,
-		CAM_SMMU_DETACH);
-attach_fail:
 	cam_smmu_destroy_handle(g_ife_hw_mgr.mgr_common.img_iommu_hdl);
 	g_ife_hw_mgr.mgr_common.img_iommu_hdl = -1;
 	return rc;

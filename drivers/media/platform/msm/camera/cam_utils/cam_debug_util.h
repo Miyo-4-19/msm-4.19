@@ -1,14 +1,10 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
+
+#include <linux/io.h>
+#include <linux/module.h>
 
 #ifndef _CAM_DEBUG_UTIL_H_
 #define _CAM_DEBUG_UTIL_H_
@@ -84,7 +80,8 @@ const char *cam_get_module_name(unsigned int module_id);
  * @args     :  Arguments which needs to be print in log
  */
 #define CAM_ERR(__module, fmt, args...)                            \
-	pr_info("CAM_ERR: %s: %s: %d " fmt "\n",                     \
+	pr_err("[%d %d] CAM_ERR: %s: %s: %d " fmt "\n",                   \
+	    task_tgid_nr(current),  task_pid_nr(current),                  \
 		cam_get_module_name(__module), __func__,  __LINE__, ##args)
 /*
  * CAM_WARN
@@ -95,7 +92,8 @@ const char *cam_get_module_name(unsigned int module_id);
  * @args     :  Arguments which needs to be print in log
  */
 #define CAM_WARN(__module, fmt, args...)                           \
-	pr_warn("CAM_WARN: %s: %s: %d " fmt "\n",                     \
+	pr_warn("[%d %d] CAM_WARN: %s: %s: %d " fmt "\n",                  \
+	    task_tgid_nr(current),  task_pid_nr(current),                  \
 		cam_get_module_name(__module), __func__,  __LINE__, ##args)
 /*
  * CAM_INFO
@@ -106,7 +104,8 @@ const char *cam_get_module_name(unsigned int module_id);
  * @args     :  Arguments which needs to be print in log
  */
 #define CAM_INFO(__module, fmt, args...)                           \
-	pr_info("CAM_INFO: %s: %s: %d " fmt "\n",                     \
+	pr_info("[%d %d] CAM_INFO: %s: %s: %d " fmt "\n",                     \
+	    task_tgid_nr(current),  task_pid_nr(current),   \
 		cam_get_module_name(__module), __func__,  __LINE__, ##args)
 
 /*

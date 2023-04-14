@@ -1,21 +1,12 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/module.h>
-#include <linux/ion.h>
-#include <linux/iommu.h>
 #include <linux/timer.h>
 #include <linux/kernel.h>
 
@@ -452,7 +443,7 @@ int cam_hw_cdm_submit_bl(struct cam_hw_info *cdm_hw,
 	}
 
 	for (i = 0; i < req->data->cmd_arrary_count ; i++) {
-		uint64_t hw_vaddr_ptr = 0;
+		dma_addr_t hw_vaddr_ptr = 0;
 		size_t len = 0;
 
 		if ((!cdm_cmd->cmd[i].len) &&
@@ -950,11 +941,6 @@ int cam_hw_cdm_probe(struct platform_device *pdev)
 	cam_smmu_set_client_page_fault_handler(cdm_core->iommu_hdl.non_secure,
 		cam_hw_cdm_iommu_fault_handler, cdm_hw);
 
-	rc = cam_smmu_ops(cdm_core->iommu_hdl.non_secure, CAM_SMMU_ATTACH);
-	if (rc < 0) {
-		CAM_ERR(CAM_CDM, "Attach iommu non secure handle failed");
-		goto destroy_non_secure_hdl;
-	}
 	cdm_core->iommu_hdl.secure = -1;
 
 	cdm_core->work_queue = alloc_workqueue(cdm_core->name,

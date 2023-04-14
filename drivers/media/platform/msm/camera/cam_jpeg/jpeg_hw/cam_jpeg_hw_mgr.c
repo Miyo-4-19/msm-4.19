@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/uaccess.h>
@@ -159,7 +152,9 @@ static int cam_jpeg_mgr_process_irq(void *priv, void *data)
 
 	if ((p_cfg_req->hw_cfg_args.hw_update_entries[CAM_JPEG_PARAM].offset /
 			sizeof(uint32_t)) >= cmd_buf_len) {
-		CAM_ERR(CAM_JPEG, "Not enough buf");
+		CAM_ERR(CAM_JPEG, "Invalid offset: %u cmd buf len: %zu",
+			p_cfg_req->hw_cfg_args.hw_update_entries[
+			CAM_JPEG_PARAM].offset, cmd_buf_len);
 		return -EINVAL;
 	}
 
@@ -1695,11 +1690,6 @@ int cam_jpeg_hw_mgr_init(struct device_node *of_node, uint64_t *hw_mgr_hdl,
 	}
 
 	CAM_DBG(CAM_JPEG, "mmu handle :%d", g_jpeg_hw_mgr.iommu_hdl);
-	rc = cam_smmu_ops(g_jpeg_hw_mgr.iommu_hdl, CAM_SMMU_ATTACH);
-	if (rc) {
-		CAM_ERR(CAM_JPEG, "jpeg attach failed: %d", rc);
-		goto jpeg_attach_failed;
-	}
 
 	rc = cam_cdm_get_iommu_handle("jpegenc", &cdm_handles);
 	if (rc) {
@@ -1742,9 +1732,7 @@ int cam_jpeg_hw_mgr_init(struct device_node *of_node, uint64_t *hw_mgr_hdl,
 	return rc;
 
 cdm_iommu_failed:
-	cam_smmu_ops(g_jpeg_hw_mgr.iommu_hdl, CAM_SMMU_DETACH);
 	cam_smmu_destroy_handle(g_jpeg_hw_mgr.iommu_hdl);
-jpeg_attach_failed:
 	g_jpeg_hw_mgr.iommu_hdl = 0;
 smmu_get_failed:
 	mutex_destroy(&g_jpeg_hw_mgr.hw_mgr_mutex);
