@@ -1,13 +1,6 @@
-/* Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -158,6 +151,8 @@ static int cam_req_mgr_close(struct file *filep)
 	struct v4l2_fh *vfh = filep->private_data;
 	struct v4l2_subdev_fh *subdev_fh = to_v4l2_subdev_fh(vfh);
 
+	CAM_WARN(CAM_CRM,
+		"release invoked associated userspace process has died");
 	mutex_lock(&g_dev.cam_lock);
 
 	if (g_dev.open_cnt <= 0) {

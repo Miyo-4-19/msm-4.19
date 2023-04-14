@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/uaccess.h>
@@ -2358,18 +2351,21 @@ static int cam_icp_allocate_qdss_mem(void)
 static int cam_icp_get_io_mem_info(void)
 {
 	int rc;
-	size_t len;
-	dma_addr_t iova;
+	size_t len, discard_iova_len;
+	dma_addr_t iova, discard_iova_start;
 
 	rc = cam_smmu_get_io_region_info(icp_hw_mgr.iommu_hdl,
-		&iova, &len);
+		&iova, &len, &discard_iova_start, &discard_iova_len);
 	if (rc)
 		return rc;
 
 	icp_hw_mgr.hfi_mem.io_mem.iova_len = len;
 	icp_hw_mgr.hfi_mem.io_mem.iova_start = iova;
+	icp_hw_mgr.hfi_mem.io_mem.discard_iova_start = discard_iova_start;
+	icp_hw_mgr.hfi_mem.io_mem.discard_iova_len = discard_iova_len;
 
-	CAM_DBG(CAM_ICP, "iova: %llx, len: %zu", iova, len);
+	CAM_DBG(CAM_ICP, "iova: %llx, len: %zu discard iova %llx len %llx",
+		iova, len, discard_iova_start, discard_iova_len);
 
 	return rc;
 }
@@ -3575,7 +3571,7 @@ static int cam_icp_mgr_process_cmd_desc(struct cam_icp_hw_mgr *hw_mgr,
 	int rc = 0;
 	int i, j, k;
 	int num_cmd_buf = 0;
-	uint64_t addr;
+	dma_addr_t addr;
 	size_t len;
 	struct cam_cmd_buf_desc *cmd_desc = NULL;
 	uintptr_t cpu_addr = 0;
@@ -3629,6 +3625,13 @@ static int cam_icp_mgr_process_cmd_desc(struct cam_icp_hw_mgr *hw_mgr,
 				cmd_desc[i].length)) {
 				CAM_ERR(CAM_ICP, "Invalid offset or length");
 				goto rel_cmd_buf;
+			}
+			if ((len <= cmd_desc[i].offset) ||
+				(cmd_desc[i].size < cmd_desc[i].length) ||
+				((len - cmd_desc[i].offset) <
+				cmd_desc[i].length)) {
+				CAM_ERR(CAM_ICP, "Invalid offset or length");
+				return -EINVAL;
 			}
 			cpu_addr = cpu_addr + cmd_desc[i].offset;
 		}
@@ -4834,7 +4837,7 @@ static int cam_icp_mgr_acquire_hw(void *hw_mgr_priv, void *acquire_hw_args)
 {
 	int rc = 0, bitmap_size = 0;
 	uint32_t ctx_id = 0;
-	uint64_t io_buf_addr;
+	dma_addr_t io_buf_addr;
 	size_t io_buf_size;
 	struct cam_icp_hw_mgr *hw_mgr = hw_mgr_priv;
 	struct cam_icp_hw_ctx_data *ctx_data = NULL;

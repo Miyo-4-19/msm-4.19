@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/kernel.h>
@@ -320,6 +313,7 @@ int cam_sensor_i2c_command_parser(
 
 		rc = cam_mem_get_cpu_buf(cmd_desc[i].mem_handle,
 			&generic_ptr, &len_of_buff);
+		cmd_buf = (uint32_t *)generic_ptr;
 		if (rc < 0) {
 			CAM_ERR(CAM_SENSOR,
 				"cmd hdl failed:%d, Err: %d, Buffer_len: %zd",

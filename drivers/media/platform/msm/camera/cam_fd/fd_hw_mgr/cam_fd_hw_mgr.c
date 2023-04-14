@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -589,7 +582,7 @@ static int cam_fd_mgr_util_prepare_io_buf_info(int32_t iommu_hdl,
 					iommu_hdl, &io_addr[plane], &size);
 				if (rc) {
 					CAM_ERR(CAM_FD,
-						"Invalid io buf %d %d %d %d",
+						"Failed to get io buf %u %u %u %d",
 						io_cfg[i].direction,
 						io_cfg[i].resource_type, plane,
 						rc);
@@ -1172,7 +1165,7 @@ static int cam_fd_mgr_hw_acquire(void *hw_mgr_priv, void *hw_acquire_args)
 	}
 
 	if (copy_from_user(&fd_acquire_args,
-		(void __user *)acquire_args->acquire_info,
+		u64_to_user_ptr, (acquire_args->acquire_info),
 		sizeof(struct cam_fd_acquire_dev_info))) {
 		CAM_ERR(CAM_FD, "Copy from user failed");
 		return -EFAULT;

@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -928,7 +921,8 @@ int cam_flash_i2c_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 	/* getting CSL Packet */
 	ioctl_ctrl = (struct cam_control *)arg;
 
-	if (copy_from_user((&config), (void __user *) ioctl_ctrl->handle,
+	if (copy_from_user((&config),
+		u64_to_user_ptr(ioctl_ctrl->handle),
 		sizeof(config))) {
 		CAM_ERR(CAM_FLASH, "Copy cmd handle from user failed");
 		return -EFAULT;

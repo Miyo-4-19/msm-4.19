@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/debugfs.h>
@@ -3285,6 +3278,15 @@ static int __cam_isp_ctx_config_dev_in_top_state(
 	req_isp->num_fence_map_in = cfg.num_in_map_entries;
 	req_isp->num_acked = 0;
 	req_isp->bubble_detected = false;
+
+	for (i = 0; i < req_isp->num_fence_map_out; i++) {
+		rc = cam_sync_get_obj_ref(req_isp->fence_map_out[i].sync_id);
+		if (rc) {
+			CAM_ERR(CAM_ISP, "Can't get ref for fence %d",
+				req_isp->fence_map_out[i].sync_id);
+			goto put_ref;
+		}
+	}
 
 	for (i = 0; i < req_isp->num_fence_map_out; i++) {
 		rc = cam_sync_get_obj_ref(req_isp->fence_map_out[i].sync_id);

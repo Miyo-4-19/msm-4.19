@@ -1,13 +1,6 @@
-/* Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/debugfs.h>
@@ -505,7 +498,9 @@ int32_t cam_context_prepare_dev_to_hw(struct cam_context *ctx,
 			ctx->dev_name, ctx->ctx_id);
 
 	return rc;
-
+put_ctx_ref:
+	for (; j >= 0; j--)
+		cam_context_putref(ctx);
 put_ref:
 	for (--i; i >= 0; i--) {
 		if (cam_sync_put_obj_ref(req->out_map_entries[i].sync_id))
@@ -622,7 +617,8 @@ int32_t cam_context_flush_ctx_to_hw(struct cam_context *ctx)
 	int rc = 0;
 	bool free_req;
 
-	CAM_DBG(CAM_CTXT, "[%s] E: NRT flush ctx", ctx->dev_name);
+	CAM_DBG(CAM_CTXT, "[%s][%d] E: NRT flush ctx",
+		ctx->dev_name, ctx->ctx_id);
 	memset(&flush_args, 0, sizeof(flush_args));
 
 	/*
@@ -1051,7 +1047,7 @@ static int cam_context_dump_context(struct cam_context *ctx,
 	int rc = 0;
 	struct cam_context_dump_header *hdr;
 	char *dst;
-	uint64_t *addr, *start;
+	uintptr_t *addr, *start;
 	uintptr_t cpu_addr;
 	size_t    buf_len;
 	uint32_t min_len, remain_len;
@@ -1083,8 +1079,8 @@ static int cam_context_dump_context(struct cam_context *ctx,
 	hdr = (struct cam_context_dump_header *)dst;
 	snprintf(hdr->tag, CAM_CONTEXT_DUMP_TAG_MAX_LEN,
 		"%s_CTXT_DUMP:", ctx->dev_name);
-	hdr->word_size = sizeof(uint64_t);
-	addr = (uint64_t *)(dst + sizeof(struct cam_context_dump_header));
+	hdr->word_size = sizeof(uintptr_t);
+	addr = (uintptr_t *)(dst + sizeof(struct cam_context_dump_header));
 	start = addr;
 	req = list_first_entry(&ctx->active_req_list,
 		struct cam_ctx_request, list);
