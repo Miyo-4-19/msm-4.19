@@ -18,6 +18,7 @@ subdir-y += mediatek
 subdir-y += nvidia
 #subdir-y += qcom
 subdir-y += qcom-sdm845
+subdir-y += somc
 subdir-y += realtek
 subdir-y += renesas
 subdir-y += rockchip
