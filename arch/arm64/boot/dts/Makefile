@@ -21,6 +21,7 @@ subdir-y += marvell
 subdir-y += mediatek
 subdir-y += nvidia
 subdir-y += qcom
+subdir-y += somc
 subdir-y += realtek
 subdir-y += renesas
 subdir-y += rockchip
@@ -35,8 +36,11 @@ subdir-y += zte
 else
     ifeq ($(CONFIG_ARCH_SDM845),y)
         subdir-y += qcom
-    else
-        subdir-y += vendor
+    	ifeq ($(CONFIG_ARCH_SONY_TAMA),y)
+	    subdir-y += somc
+	    else
+	        subdir-y += vendor
+	endif
     endif
 endif
 
