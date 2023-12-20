@@ -32,7 +32,6 @@ struct sony_ext_uim_ctrl_drvdata {
 	struct device *device;
 	struct mutex lock;
 	int uim2_detect_en_gpio;
-#if !defined(CONFIG_ARCH_SONY_TAMA)
 	int uim2_select_gpio;
 	bool type;
 	bool is_set_once;
@@ -111,7 +110,6 @@ static ssize_t sony_ext_uim_ctrl_type_store(struct device *dev,
 	if (type) {
 		sony_ext_uim_ctrl_gpio_set_value(
 			drv->uim2_detect_en_gpio, 1);
-#if !defined(CONFIG_ARCH_SONY_TAMA)
 		sony_ext_uim_ctrl_gpio_set_value(
 			drv->uim2_select_gpio, 1);
 	} else {
@@ -181,7 +179,6 @@ static int sony_ext_uim_ctrl_probe(struct platform_device *pdev)
 	pr_info("sony_ext_uim_ctrl: uim2_detect_en_gpio = %d\n",
 		drv->uim2_detect_en_gpio);
 
-#if !defined(CONFIG_ARCH_SONY_TAMA)
 	drv->uim2_select_gpio = of_get_named_gpio(np, "uim2_select_gpio", 0);
 	if (!gpio_is_valid(drv->uim2_select_gpio))
 		pr_err("%s: gpio_is_valid(uim2_select_gpio)=%d: invalid\n",
@@ -210,9 +207,6 @@ static int sony_ext_uim_ctrl_probe(struct platform_device *pdev)
 	mutex_init(&drv->lock);
 	_drv = drv;
 
-#if defined(CONFIG_ARCH_SONY_TAMA)
-	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_detect_en_gpio, 1);
-#else
 	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_detect_en_gpio, 0);
 	sony_ext_uim_ctrl_gpio_set_value(drv->uim2_select_gpio, 0);
 	return 0;
