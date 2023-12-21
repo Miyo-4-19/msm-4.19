@@ -24,17 +24,6 @@
 		pmsg-size = <0x20000>;
 		ecc-size = <16>;
 	};
-
-	qseecom_mem: qseecom_region@8ab00000 {
-		reg = <0 0x8ab00000 0 0x1900000>;
-	};
-
-	/delete-node/ camera_region@8bf00000;
-	pil_camera_mem: camera_region@97c00000 {
-		compatible = "removed-dma-pool";
-		no-map;
-		reg = <0 0x97c00000 0 0x500000>;
-	};
 };
 
 &cam_cci {

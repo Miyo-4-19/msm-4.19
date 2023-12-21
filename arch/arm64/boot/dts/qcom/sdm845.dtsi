@@ -480,7 +480,7 @@
 		qseecom_mem: qseecom_region@0x8ab00000 {
 			compatible = "shared-dma-pool";
 			no-map;
-			reg = <0 0x8ab00000 0 0x1400000>;
+			reg = <0 0x8ab00000 0 0x1900000>;
 		};
 
 		pil_camera_mem: camera_region@0x8bf00000 {
