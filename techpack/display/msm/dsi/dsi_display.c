@@ -1071,11 +1071,7 @@ int dsi_display_cmd_transfer(struct drm_connector *connector,
 
 		set = &dsi_display->cmd_set;
 		set->count = 0;
-		dsi_panel_get_cmd_pkt_count(dbgfs_tx_cmd_buf,
-				dsi_display->tx_cmd_buf_ndx, &cnt);
 		dsi_panel_alloc_cmd_packets(set, cnt);
-		dsi_panel_create_cmd_packets(dbgfs_tx_cmd_buf,
-				dsi_display->tx_cmd_buf_ndx, cnt, set->cmds);
 		cmds = set->cmds;
 		dsi_display->tx_cmd_buf_ndx = 0;
 
